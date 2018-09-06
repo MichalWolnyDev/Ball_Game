@@ -10,7 +10,7 @@ function play(){
   pitch.elements();
   player_one = new Player(30, 30, 250, 350, "white");
   player_two = new Player(30, 30, 750, 350, "blue");
-  ball = new Ball(500, 300, "aqua");
+  ball = new Ball(500, 300, "black");
   goal_one = new Goal(10, 100, 0, 300, "white");
   goal_two = new Goal(10, 100, 1035, 300, "blue");
 
@@ -61,8 +61,8 @@ var Ball = function(x, y, color){
   this.endangle = 2*Math.PI;
   this.x = x;
   this.y = y;
-  this.dx = 2;
-  this.dy = -2;
+  this.dx = 8;
+  this.dy = -3;
   this.speedX = 0;
   this.speedY = 0;
   this.update = function(){
@@ -114,7 +114,21 @@ var Goal = function(width, height, x, y, color){
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 }
+function collide(ball, player_one){
+  var distX = Math.abs(ball.x - player_one.x - player_one.width/2);
+  var distY = Math.abs(ball.y - player_one.y - player_one.height/2);
 
+  if(distX > (player_one.width/2 + ball.r)) return false;
+  if(distY > (player_one.height/2 + ball.r)) return false;
+
+  if(distX <= (player_one.width/2)) return true;
+  if(distY <= (player_one.height/2)) return true;
+
+  var dx = distX - player_one.width / 2;
+  var dy = distY - player_one.height / 2;
+
+  return (dx * dx + dy * dy <= (ball.r * ball.r));
+}
 // Czyszczenie i rysowanie boiska na nowo
 function updatePitch(){
   pitch.clear();
@@ -162,8 +176,14 @@ function updatePitch(){
   ball.x += ball.dx;
   ball.y += ball.dy;
   // odbicie pilki od gracza
+  if(collide(ball, player_one)){
+    ball.dx = -ball.dx;
 
+  }
 
+  if(collide(ball, player_two)){
+    ball.dx = -ball.dx;
+  }
 
   //kolizja ze sciana player_one
   if(player_one.x < 0) player_one.x = 0;
