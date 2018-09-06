@@ -1,7 +1,10 @@
 
 .canvas{
-  background-color: #74c176;
+  /* background-color: #74c176; */
   padding: 0;
   margin: auto;
   display: block;
+  background-image: url('pitch.png');
+  background-size: cover;
+  background-repeat: no-repeat;
 }
