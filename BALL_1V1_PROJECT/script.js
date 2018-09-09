@@ -4,10 +4,12 @@ var ball;
 var goal_one;
 var goal_two;
 var po_points = 0, pt_points = 0;
+var score = document.getElementById('score');
+var win = document.getElementById('winner');
 
 function play(){
   pitch.start();
-  pitch.elements();
+  // pitch.elements();
   player_one = new Player(30, 30, 250, 350, "white");
   player_two = new Player(30, 30, 750, 350, "blue");
   ball = new Ball(500, 300, "black");
@@ -25,7 +27,6 @@ var pitch = {
     this.canvas.id = 'canvas';
     this.canvas.className = 'canvas';
     this.ctx = this.canvas.getContext('2d');
-
     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
     this.interval = setInterval(updatePitch, 20); //gra dziala w 50 klatkach/s
 
@@ -38,17 +39,17 @@ var pitch = {
       pitch.keys[e.keyCode] = (e.type == 'keydown');
     })
   },
-  elements: function(){ //rysowanie lini dzielacej polowy boiska oraz okrag srodkowy
-    ctx = pitch.ctx;
-    ctx.moveTo(500, 0);
-    ctx.lineTo(500, 600);
-    ctx.strokeStyle = '#fff';
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(500, 300, 70, 0, 2*Math.PI);
-    ctx.stroke();
-  },
+  // elements: function(){ //rysowanie lini dzielacej polowy boiska oraz okrag srodkowy
+  //   ctx = pitch.ctx;
+  //   ctx.moveTo(500, 0);
+  //   ctx.lineTo(500, 600);
+  //   ctx.strokeStyle = '#fff';
+  //   ctx.stroke();
+  //
+  //   ctx.beginPath();
+  //   ctx.arc(500, 300, 70, 0, 2*Math.PI);
+  //   ctx.stroke();
+  // },
   clear: function(){
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
@@ -114,6 +115,17 @@ var Goal = function(width, height, x, y, color){
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 }
+//reset
+function reset(){
+  var points1 = po_points;
+	var points2 = pt_points;
+	player_one = new Player(30, 30, 250, 350, "white");
+	po_points = points1;
+	player_two = new Player(30, 30, 750, 350, "blue");
+	pt_points = points2;
+	ball = new Ball(500, 300, "black");
+}
+//kolizja pilki z graczem
 function collide(ball, player_one){
   var distX = Math.abs(ball.x - player_one.x - player_one.width/2);
   var distY = Math.abs(ball.y - player_one.y - player_one.height/2);
@@ -129,10 +141,51 @@ function collide(ball, player_one){
 
   return (dx * dx + dy * dy <= (ball.r * ball.r));
 }
-// Czyszczenie i rysowanie boiska na nowo
-function updatePitch(){
-  pitch.clear();
+//kolizja pilki z bramka
+function collideGoal(ball, goal){
+  var distX = Math.abs(ball.x - goal.x - goal.width/2);
+  var distY = Math.abs(ball.y - goal.y - goal.height/2);
 
+  if(distX > (goal.width/2 + ball.r)) return false;
+  if(distY > (goal.height/2 + ball.r)) return false;
+
+  if(distX <= (goal.width/2)) return true;
+  if(distY <= (goal.height/2)) return true;
+
+  var dx = distX - goal.width / 2;
+  var dy = distY - goal.height / 2;
+
+  return (dx * dx + dy * dy <= (ball.r * ball.r));
+}
+
+//goal
+function checkGoal(){
+    //GOL!!!!
+    if(collideGoal(ball, goal_one)){
+      pt_points++;
+      console.log("Blue: " + pt_points);
+      reset();
+    }
+    if(collideGoal(ball, goal_two)){
+      po_points++;
+      console.log("White: " + po_points);
+      reset();
+    }
+
+}
+//winner
+function checkWin(){
+  if(pt_points == 10){
+    score.innerHTML =  po_points + ":" + pt_points + "<br>" + "BLUE WINNER" + "<br>" + "F5 TO REFRESH";
+    clearInterval(pitch.interval);
+  }
+  if(po_points == 10){
+    score.innerHTML =  po_points + ":" + pt_points + "<br>" + "WHITE WINNER" + "<br>" + "F5 TO REFRESH";
+    clearInterval(pitch.interval);
+  }
+}
+//sterowanie
+function movePlayer(){
   player_one.speedX = 0;
   player_one.speedY = 0;
 
@@ -165,26 +218,9 @@ function updatePitch(){
     player_two.speedY = 6;
   }
 
-  // odbicie pilki
-  if(ball.x + ball.dx > canvas.width - ball.r || ball.x + ball.dx < ball.r){
-     ball.dx = -ball.dx;
-  }
-  if(ball.y + ball.dy > canvas.height - ball.r || ball.y + ball.dy < ball.r){
-    ball.dy = -ball.dy;
-  }
-
-  ball.x += ball.dx;
-  ball.y += ball.dy;
-  // odbicie pilki od gracza
-  if(collide(ball, player_one)){
-    ball.dx = -ball.dx;
-
-  }
-
-  if(collide(ball, player_two)){
-    ball.dx = -ball.dx;
-  }
-
+}
+//kolizja gracz - sciana
+function playerWallCollide(){
   //kolizja ze sciana player_one
   if(player_one.x < 0) player_one.x = 0;
   if(player_one.y < 0) player_one.y = 0;
@@ -195,6 +231,41 @@ function updatePitch(){
   if(player_two.y < 0) player_two.y = 0;
   if(player_two.x + player_two.width > canvas.width) player_two.x = canvas.width - player_two.width;
   if(player_two.y + player_two.height > canvas.height) player_two.y = canvas.height - player_two.height;
+}
+//odbicie pilki od sciany
+function ballWall(){
+  // odbicie pilki
+  if(ball.x + ball.dx > canvas.width - ball.r || ball.x + ball.dx < ball.r){
+     ball.dx = -ball.dx;
+  }
+  if(ball.y + ball.dy > canvas.height - ball.r || ball.y + ball.dy < ball.r){
+    ball.dy = -ball.dy;
+  }
+
+  ball.x += ball.dx;
+  ball.y += ball.dy;
+}
+//kolizja gracz - pilka
+function playerBallCollide(){
+  // odbicie pilki od gracza
+  if(collide(ball, player_one)){
+    ball.dx = -ball.dx;
+
+  }
+
+  if(collide(ball, player_two)){
+    ball.dx = -ball.dx;
+  }
+
+}
+// Czyszczenie i rysowanie boiska na nowo
+function updatePitch(){
+  pitch.clear();
+  playerBallCollide()
+  ballWall();
+  playerWallCollide();
+  movePlayer();
+  checkGoal();
 
   ball.position();
   ball.update();
@@ -204,4 +275,7 @@ function updatePitch(){
   player_two.update();
   goal_one.update();
   goal_two.update();
+
+  score.innerHTML = po_points + ":" + pt_points;
+  checkWin();
 }

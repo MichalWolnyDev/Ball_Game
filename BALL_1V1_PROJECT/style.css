@@ -8,3 +8,13 @@
   background-size: cover;
   background-repeat: no-repeat;
 }
+.score{
+  position: absolute;
+  top: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: helvetica;
+  text-align: center;
+}
