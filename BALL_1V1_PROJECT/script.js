@@ -6,8 +6,10 @@ var goal_two;
 var po_points = 0, pt_points = 0;
 var score = document.getElementById('score');
 var win = document.getElementById('winner');
+var menu = document.getElementById('menu');
 
 function play(){
+  menu.style.display = "none";
   pitch.start();
   // pitch.elements();
   player_one = new Player(30, 30, 250, 350, "white");

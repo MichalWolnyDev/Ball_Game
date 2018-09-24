@@ -1,20 +1,42 @@
-
+body{
+  margin: 0;
+  background-color: #458B00;
+}
 .canvas{
   /* background-color: #74c176; */
   padding: 0;
   margin: auto;
   display: block;
-  background-image: url('pitch.png');
+  background-image: url('pitch.jpg');
   background-size: cover;
   background-repeat: no-repeat;
+  margin-top: 2rem;
 }
 .score{
   position: absolute;
-  top: 10;
+  top: 30;
   left: 50%;
   transform: translateX(-50%);
   font-size: 3rem;
   font-weight: bold;
   font-family: helvetica;
   text-align: center;
+}
+.menu{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #458B00;
+}
+.instruction{
+  text-align: center;
+
+}
+.instruction__button{
+    padding: 1rem;
+    width: 100%;
+}
+.instruction__button:hover{
+  cursor: pointer;
 }

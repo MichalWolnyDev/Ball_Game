@@ -4,8 +4,17 @@
   <link rel="stylesheet" href="style.css">
   <title>BALL 1v1</title>
 </head>
-<body onload="play()">
+<body>
 
+  <div class="menu" id="menu">
+    <div class="instruction">
+      <h1>Sterowanie</h1>
+      <p>Gracz bialy - W,A,S,D</p>
+      <p>Gracz niebieski - Strzalki</p>
+      <p>Wygrywa osoba która pierwsza zdobędzie 10 bramek</p>
+      <button class="instruction__button" onclick="play()">Graj</button>
+    </div>
+  </div>
 
   <div id="score" class="score"></div>
   <script src="script.js"></script>
